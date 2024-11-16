@@ -8,6 +8,8 @@ function [new_maxium, p_pw, pp, rho, c_hat, L_sol] = new_method3(params)
     b_k = zeros(1,GP);
     rho = zeros(GP,GP);  %%%% 0으로 이루어진 16x16 행렬 생성
     pp = zeros(GP,GP);   %%%% 0으로 이루어진 16x16 행렬 생성
+    pn = zeros(1,GP);    %%%% 0으로 이루어진 16x16 행렬 생성  
+    power_u = zeros(1,GP);
     new_maxium = zeros(1,GP);
     N_OFDM_symbols = length(r)/(GP+N);
     for k = 1:GP
@@ -50,11 +52,14 @@ function [new_maxium, p_pw, pp, rho, c_hat, L_sol] = new_method3(params)
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Table(1) in[19]
     for u = 1:16
         for k = 1:u
-           pp(u,k) = p_pw(k);  %%%%%%u paths power selection from(16)
+           power_u(u,k) = p_pw(k);  %%%%%%u paths power selection from(16)
         end
         %%%%%%channel power normalization
-        pp(u, :) = pp(u, :) * (c_hat-params.J(u))/sum(p_pw(1:u));
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        pn(u) = sum(power_u(u,:));%%%%%total power
+        for k = 1:u
+           pp(u,k) = power_u(u,k) * (c_hat-params.J(u))./pn(u);
+        end
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         for k = 1:GP
             for l = 1:GP-k+1
                 rho(u,k) = rho(u,k) + pp(u,l)/c_hat;  %%%%%%(u)th rho calculation 
@@ -62,7 +67,7 @@ function [new_maxium, p_pw, pp, rho, c_hat, L_sol] = new_method3(params)
         end
          %%%%%%% L_max를 추정하기 위한 계산
         new_maxium(u) = -sum((a_k-2*rho(u,:).*b_k)./(c_hat*(1-rho(u,:).^2))+log(1-rho(u,:).^2))/(2*(N+GP))-log(pi)/2-(N*log(c_hat)/+(N-GP)/(2*(N+GP)));%%%%%%%%논문에 나온 더하는 방식을 사용
-    
+
     end
     [~,L_sol] = max(new_maxium);
 end

@@ -12,7 +12,7 @@ function []=Subplot_performance(params)
     grid on;
     xlabel('SNR (dB)', 'Fontsize', 12);
     ylabel('CD', 'Fontsize', 12);
-    legend('Method2', 'new Method2', 'Joint f_{Pe}', 'Location','southeast');
+    legend('Method2', 'Method3', 'Method2 upgraded', 'Location','southeast');
     
     subplot(2, 2, 2);
     plot(params.SNR_dB,params.M1_2,'b+-');
@@ -24,7 +24,7 @@ function []=Subplot_performance(params)
     grid on;
     xlabel('SNR (dB)', 'Fontsize', 12)
     ylabel('GD', 'Fontsize', 12);
-    legend('Method2', 'new Method2', 'Joint f_{Pe}', 'Location','southeast');
+    legend('Method2', 'Method3', 'Method2 upgraded', 'Location','southeast');
     
     subplot(2, 2, 3);
     plot(params.SNR_dB,params.M1_3,'b+-');
@@ -36,7 +36,7 @@ function []=Subplot_performance(params)
     grid on;
     xlabel('SNR (dB)', 'Fontsize', 12);
     ylabel('BD', 'Fontsize', 12);
-    legend('Method2', 'new Method2', 'Joint f_{Pe}', 'Location','southeast');
+    legend('Method2', 'Method3', 'Method2 upgraded', 'Location','southeast');
     
     subplot(2, 2, 4);
     plot(params.SNR_dB,params.M1_4,'b+-');
@@ -48,5 +48,5 @@ function []=Subplot_performance(params)
     grid on;
     xlabel('SNR (dB)', 'Fontsize', 12);
     ylabel('ED', 'Fontsize', 12);
-    legend('Method2', 'new Method2', 'Joint f_{Pe}', 'Location','southeast');
+    legend('Method2', 'Method3', 'Method2 upgraded', 'Location','southeast');
 end

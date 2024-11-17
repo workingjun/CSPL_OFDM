@@ -15,25 +15,25 @@ function result = Performance_count(params)
              params.count4 = params.count4+1;
          end 
 
-         if params.pe_sol_rx == L 
+         if params.L_sol == L 
             params.count11 = params.count11+1;
             params.count12 = params.count12+1;
-         elseif params.pe_sol_rx > L  && params.pe_sol_rx < (L+GP)/2
+         elseif params.L_sol > L  && params.L_sol < (L+GP)/2
              params.count12 = params.count12 + 1;
-         elseif params.pe_sol_rx >= (L+GP)/2
+         elseif params.L_sol >= (L+GP)/2
              params.count13 = params.count13+1;
-         elseif params.pe_sol_rx < L 
+         elseif params.L_sol < L 
              params.count14 = params.count14+1;
          end
 
-         if params.L_sol_pe2 == L
+         if params.e_sol_rx == L
             params.count21 = params.count21+1;
             params.count22 = params.count22+1;
-         elseif params.L_sol_pe2 >L && params.L_sol_pe2 <(L+GP)/2
+         elseif params.e_sol_rx >L && params.e_sol_rx <(L+GP)/2
              params.count22 = params.count22 + 1;
-         elseif params.L_sol_pe2>=(L+GP)/2
+         elseif params.e_sol_rx>=(L+GP)/2
              params.count23 = params.count23+1;
-         elseif params.L_sol_pe2<L
+         elseif params.e_sol_rx<L
              params.count24 = params.count24+1;
          end 
 

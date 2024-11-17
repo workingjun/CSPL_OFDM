@@ -145,25 +145,25 @@ for n = 1:length(params.SNR_dB)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 주파수 선택적 페이딩 채널 ??????????????????????? (가)
 
         [params.J, SIM, params.new_sol] = new_method2(params);%%%%%%(u)th estimated noise power
-        [new_maxium, params.p_pw, pp, rho, c_hat, L_sol] = new_method3(params);%%%%%%%%method3 함수를 가져와 사용
+        [new_maxium, params.rho, params.c_hat, params.L_sol] = new_method3(params);%%%%%%%%method3 함수를 가져와 사용
         % [mn_sol, zs_sol, rob, rak_v2] = new_method4(new_maxium,SIM); %%%%%%%%method4로 ranking-sum과 normalization 3가지
         % [params.e_rx, params.e_rx_pdf, params.e_rx_multi_pdf,  params.y_rx,  params.y_rx_pdf, params.y_rx_multi_pdf, params.L_sol_erx] = method2_Additional(params);
 
         % Subplot_rxSignal(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        [Asq,Pe_multi_pdf,p, p_pdf,  e_rx_pdf, pe_sol_rx] = method2_upgraded(params);
+        [ABdiffsq, mean_e, e_rx_sum_pdf, params.e_sol_rx] = method2_upgraded(params);
 
         % figure(1)
-        % stem(1:16, p_pdf);
+        % stem(1:16, e_rx_pdf);
         % grid on;
-        % 
-        % figure(2)
-        % stem(1:16, Pe_multi_pdf);
-        % title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(pe_sol_rx)], 'Interpreter', 'latex');
-        % grid on;
-        % 
-        % pause;
+
+        figure(2)
+        stem(1:16, e_rx_sum_pdf);
+        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.e_sol_rx)], 'Interpreter', 'latex');
+        grid on;
+
+        pause;
         
         if Pilot_CHE_Test == 1
             hat_H = Pilot_CHE(No_Pilot_symbols, params.N, params.GP, params.rx_signal, Tx_Symbols);
@@ -233,7 +233,7 @@ for n = 1:length(params.SNR_dB)
 
         % Subplot_hhat(params);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % result = Performance_count(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % 
+
         % params.count1 = result.count1;
         % params.count2 = result.count2;
         % params.count3 = result.count3;
@@ -338,5 +338,5 @@ for n = 1:length(params.SNR_dB)
     params.Sim_SER2(n) = Symbol_Error2/(params.N*N_OFDM_symbols*params.N_iter);%%%%%%%%%%%%%%%%%%%%%%% SNR_dB(n)의 SER 계산 !! 
 end
 
-% Subplot_performance(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Subplot_performance(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Ber_Performance(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

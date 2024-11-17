@@ -1,4 +1,4 @@
-function [new_maxium, p_pw, pp, rho, c_hat, L_sol] = new_method3(params)
+function [new_maxium, rho, c_hat, L_sol] = new_method3(params)
     GP = params.GP;
     N = params.N;
     r = params.rx_signal;
@@ -12,6 +12,7 @@ function [new_maxium, p_pw, pp, rho, c_hat, L_sol] = new_method3(params)
     power_u = zeros(1,GP);
     new_maxium = zeros(1,GP);
     N_OFDM_symbols = length(r)/(GP+N);
+
     for k = 1:GP
         a = 0;
         b = 0;

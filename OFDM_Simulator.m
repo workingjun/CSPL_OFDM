@@ -147,19 +147,20 @@ for n = 1:length(params.SNR_dB)
         [params.J, SIM, params.new_sol] = new_method2(params);%%%%%%(u)th estimated noise power
         [new_maxium, params.rho, params.c_hat, params.L_sol] = new_method3(params);%%%%%%%%method3 함수를 가져와 사용
         % [mn_sol, zs_sol, rob, rak_v2] = new_method4(new_maxium,SIM); %%%%%%%%method4로 ranking-sum과 normalization 3가지
-        % [params.e_rx, params.e_rx_pdf, params.e_rx_multi_pdf,  params.y_rx,  params.y_rx_pdf, params.y_rx_multi_pdf, params.L_sol_erx] = method2_Additional(params);
+        [e_rx, mean_e_og, params.e_rx_pdf, params.e_rx_multi_pdf,  params.y_rx,  params.y_rx_pdf, params.y_rx_multi_pdf, params.L_sol_erx] = method2_Additional(params);
 
         % Subplot_rxSignal(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        [ABdiffsq, mean_e, e_rx_sum_pdf, params.e_sol_rx] = method2_upgraded(params);
+        [ABdiffsq, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded(params);
+        % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
 
         % figure(1)
         % stem(1:16, e_rx_pdf);
         % grid on;
 
         figure(2)
-        stem(1:16, e_rx_sum_pdf);
+        stem(1:16, e_rx_logpdf);
         title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.e_sol_rx)], 'Interpreter', 'latex');
         grid on;
 

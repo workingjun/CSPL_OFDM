@@ -1,4 +1,4 @@
-function [ABdiffsq, mean_e, e_rx_logpdf, e_sol_rx] = method2_upgraded(params)
+function [ABdiffsq,ppw, mean_e, e_rx_logpdf, e_sol_rx] = method2_upgraded_add(params)
     GP = params.GP;
     L = params.L;
     N = params.N;
@@ -31,12 +31,9 @@ function [ABdiffsq, mean_e, e_rx_logpdf, e_sol_rx] = method2_upgraded(params)
         Asq(kk) = sumA/(N_OFDM_symbols);
         Bsq(kk) = sumB/N_OFDM_symbols;
 
-        if kk < 4
-            ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols);
-        else
-            ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols);
-        end
-
+        
+        ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols*(GP-u+1));
+       
         ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols);
         ABplussq(kk) = sumABplus/(2*N_OFDM_symbols);
         J(kk) = sumJ/(2*N_OFDM_symbols*(GP-kk+1));
@@ -46,8 +43,11 @@ function [ABdiffsq, mean_e, e_rx_logpdf, e_sol_rx] = method2_upgraded(params)
     % sigma_A = mean_A.^2/N_OFDM_symbols;
    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    ppw = (params.c_hat*(1-params.rho(4,16:-1:1)))./(GP-(1:GP)+1);
+    noise = J./(GP-(1:GP)+1);
 
-    mean_e = (params.c_hat*(1-params.rho(4,16:-1:1))+J)/2; %%평균
+    mean_e = (ppw + noise)/2; %%평균
     sigma_e = mean_e.^2 / (N_OFDM_symbols); %%분산
 
     e_rx_logpdf = -0.5 * (abs(ABdiffsq - mean_e).^2 / sigma_e) - log(sqrt(2 * pi * sigma_e));

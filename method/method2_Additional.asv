@@ -24,6 +24,7 @@ function [e_rx, mean_e_og, sigma_e_og, e_logpdf, e_sum_pdf, L_sol_erx] = method2
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     mean_e_og = params.J ./ (GP - (1:GP) + 1);
+    % mean_e_og = params.J;
     sigma_e_og = mean_e_og.^2 / N_OFDM_symbols;
 
     e_logpdf = -0.5 * (abs(e_rx - mean_e_og).^2 ./ sigma_e_og) - log(sqrt(2 * pi * sigma_e_og));

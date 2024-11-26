@@ -28,7 +28,13 @@ function [ABdiffsq, mean_e, sigma_e, e_rx_pdf,e_rx_logpdf, e_rx_sum_pdf, e_sol_r
             sumABdiff = sumABdiff + abs(r((GP+N)*(m-1) + kk) - r((GP+N)*(m-1) + (kk+N)))^2;
             sumABplus = sumABplus + abs(r((GP+N)*(m-1) + kk) + r((GP+N)*(m-1) + (kk+N)))^2;
         end
-        ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols*(GP-kk+1));
+        Asq(kk) = sumA/(N_OFDM_symbols);
+        Bsq(kk) = sumB/N_OFDM_symbols;
+
+        if kk < 4
+            ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols*(GP-kk+1));
+            % ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols);
+        
         ABplussq(kk) = sumABplus/(2*N_OFDM_symbols);
         J(kk) = sumJ/(2*N_OFDM_symbols*(GP-kk+1));
     end

@@ -11,9 +11,9 @@ params.L = 4;
 N_OFDM_symbols = 10^2;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Symbols :: FFT_size <= N by 고균병 at 201012!
 N_bits = (BPS*params.N)*N_OFDM_symbols;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Bits per OFDM Symbol == BPS*N
 
-% params.SNR_dB = 0:5:30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BER Simulation !!
+params.SNR_dB = 0:5:30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BER Simulation !!
 % params.SNR_dB = -10:5:40;
-params.SNR_dB = 0;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constellation 그리기 Enable !!
+% params.SNR_dB = 30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constellation 그리기 Enable !!
 params.N_iter = 10^3;%%% 모의 실험 정확도를 높이려면 수를 키우시오! :: 보고서 제출시 10^5 이상 으로 !! 
 
 No_Pilot_symbols = 1;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Pilots OFDM Symbols !! [201119]
@@ -147,26 +147,35 @@ for n = 1:length(params.SNR_dB)
         [params.J, SIM, params.new_sol] = new_method2(params);%%%%%%(u)th estimated noise power
         [new_maxium, params.rho, params.c_hat, params.L_sol] = new_method3(params);%%%%%%%%method3 함수를 가져와 사용
         % [mn_sol, zs_sol, rob, rak_v2] = new_method4(new_maxium,SIM); %%%%%%%%method4로 ranking-sum과 normalization 3가지
-        [e_rx, mean_e_og, params.e_rx_pdf, params.e_rx_multi_pdf,  params.y_rx,  params.y_rx_pdf, params.y_rx_multi_pdf, params.L_sol_erx] = method2_Additional(params);
-
+        [e_rx, mean_e_og, sigma_e_og, e_logpdf, e_sum_pdf, params.L_sol_e] = method2_Additional(params);
+        
         % Subplot_rxSignal(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        [ABdiffsq, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded(params);
+        [ABdiffsq, mean_e, sigma_e, e_rx_pdf, e_rx_logpdf, e_rx_sum_pdf, params.L_sol_erx] = method2_upgraded(params);
         % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
 
         % figure(1)
         % stem(1:16, e_rx_pdf);
+        % title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.L_sol_e)], 'Interpreter', 'latex');
         % grid on;
-
-        figure(2)
-        stem(1:16, e_rx_logpdf);
-        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.e_sol_rx)], 'Interpreter', 'latex');
-        grid on;
-
-        pause;
-        
-        if Pilot_CHE_Test == 1
+        % % ylim([0 15]);
+        % 
+        % figure(2)
+        % stem(1:16, e_rx_logpdf);
+        % title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.L_sol_erx)], 'Interpreter', 'latex');
+        % grid on;
+        % % ylim([0 15]);
+        % 
+        % figure(3)
+        % stem(1:16, e_rx_sum_pdf);
+        % title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.L_sol_erx)], 'Interpreter', 'latex');
+        % grid on;
+        % % ylim([0 15]);
+        % 
+        % pause;
+        % % 
+        if Pilot_CHE_Test == 1 
             hat_H = Pilot_CHE(No_Pilot_symbols, params.N, params.GP, params.rx_signal, Tx_Symbols);
         else
             hat_H = H;
@@ -233,32 +242,32 @@ for n = 1:length(params.SNR_dB)
         [params.Pe_multi_pdf, params.Pe_sum_pdf, params.L_sol_pe1, params.L_sol_pe2] = hhat_pEpcilon(params); %랜덤변수 Pe_l의 joint pdf, LLR
 
         % Subplot_hhat(params);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % result = Performance_count(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        result = Performance_count(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        % params.count1 = result.count1;
-        % params.count2 = result.count2;
-        % params.count3 = result.count3;
-        % params.count4 = result.count4;
-        % 
-        % params.count11 = result.count11;
-        % params.count12 = result.count12;
-        % params.count13 = result.count13;
-        % params.count14 = result.count14;
-        % 
-        % params.count21 = result.count21;
-        % params.count22 = result.count22;
-        % params.count23 = result.count23;
-        % params.count24 = result.count24;
-        % 
-        % params.count31 = result.count31;
-        % params.count32 = result.count32;
-        % params.count33 = result.count33;
-        % params.count34 = result.count34;
-        % 
-        % params.count41 = result.count41;
-        % params.count42 = result.count42;
-        % params.count43 = result.count43;
-        % params.count44 = result.count44;
+        params.count1 = result.count1;
+        params.count2 = result.count2;
+        params.count3 = result.count3;
+        params.count4 = result.count4;
+
+        params.count11 = result.count11;
+        params.count12 = result.count12;
+        params.count13 = result.count13;
+        params.count14 = result.count14;
+
+        params.count21 = result.count21;
+        params.count22 = result.count22;
+        params.count23 = result.count23;
+        params.count24 = result.count24;
+
+        params.count31 = result.count31;
+        params.count32 = result.count32;
+        params.count33 = result.count33;
+        params.count34 = result.count34;
+
+        params.count41 = result.count41;
+        params.count42 = result.count42;
+        params.count43 = result.count43;
+        params.count44 = result.count44;
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 수신기 Part(2) :: Error Count !!
         

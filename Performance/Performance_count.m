@@ -26,14 +26,14 @@ function result = Performance_count(params)
              params.count14 = params.count14+1;
          end
 
-         if params.L_sol_erx == L
+         if params.upgrade_sol == L
             params.count21 = params.count21+1;
             params.count22 = params.count22+1;
-         elseif params.L_sol_erx >L && params.L_sol_erx <(L+GP)/2
+         elseif params.upgrade_sol >L && params.upgrade_sol <(L+GP)/2
              params.count22 = params.count22 + 1;
-         elseif params.L_sol_erx>=(L+GP)/2
+         elseif params.upgrade_sol>=(L+GP)/2
              params.count23 = params.count23+1;
-         elseif params.L_sol_erx<L
+         elseif params.upgrade_sol<L
              params.count24 = params.count24+1;
          end 
 

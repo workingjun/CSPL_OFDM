@@ -11,10 +11,10 @@ params.L = 4;
 N_OFDM_symbols = 10^2;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Symbols :: FFT_size <= N by 고균병 at 201012!
 N_bits = (BPS*params.N)*N_OFDM_symbols;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Bits per OFDM Symbol == BPS*N
 
-params.SNR_dB = 0:5:30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BER Simulation !!
+% params.SNR_dB = 0:5:30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BER Simulation !!
 % params.SNR_dB = -10:5:40;
-% params.SNR_dB = 30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constellation 그리기 Enable !!
-params.N_iter = 10^3;%%% 모의 실험 정확도를 높이려면 수를 키우시오! :: 보고서 제출시 10^5 이상 으로 !! 
+params.SNR_dB = 30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constellation 그리기 Enable !!
+params.N_iter = 10^2;%%% 모의 실험 정확도를 높이려면 수를 키우시오! :: 보고서 제출시 10^5 이상 으로 !! 
 
 No_Pilot_symbols = 1;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Pilots OFDM Symbols !! [201119]
 if No_Pilot_symbols == 0
@@ -152,29 +152,25 @@ for n = 1:length(params.SNR_dB)
         % Subplot_rxSignal(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        [ABdiffsq, mean_e, sigma_e, e_rx_pdf, e_rx_logpdf, e_rx_sum_pdf, params.L_sol_erx] = method2_upgraded(params);
+        [ABdiffsq, p_rx_logpdf, SIM_upgrade, params.upgrade_sol, params.confirm_sol] = method2_upgraded(params);
         % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
 
-        % figure(1)
-        % stem(1:16, e_rx_pdf);
-        % title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.L_sol_e)], 'Interpreter', 'latex');
-        % grid on;
-        % % ylim([0 15]);
-        % 
-        % figure(2)
-        % stem(1:16, e_rx_logpdf);
-        % title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.L_sol_erx)], 'Interpreter', 'latex');
-        % grid on;
-        % % ylim([0 15]);
-        % 
-        % figure(3)
-        % stem(1:16, e_rx_sum_pdf);
-        % title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.L_sol_erx)], 'Interpreter', 'latex');
-        % grid on;
-        % % ylim([0 15]);
-        % 
-        % pause;
-        % % 
+
+
+        figure(2)
+        stem(1:16, p_rx_logpdf);
+        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.confirm_sol)], 'Interpreter', 'latex');
+        grid on;
+        % ylim([0 15]);
+
+        figure(3)
+        stem(1:15, SIM_upgrade);
+        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.upgrade_sol)], 'Interpreter', 'latex');
+        grid on;
+        % ylim([0 15]);
+
+        pause;
+
         if Pilot_CHE_Test == 1 
             hat_H = Pilot_CHE(No_Pilot_symbols, params.N, params.GP, params.rx_signal, Tx_Symbols);
         else
@@ -242,6 +238,7 @@ for n = 1:length(params.SNR_dB)
         [params.Pe_multi_pdf, params.Pe_sum_pdf, params.L_sol_pe1, params.L_sol_pe2] = hhat_pEpcilon(params); %랜덤변수 Pe_l의 joint pdf, LLR
 
         % Subplot_hhat(params);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         result = Performance_count(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         params.count1 = result.count1;

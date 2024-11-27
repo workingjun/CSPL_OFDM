@@ -1,4 +1,4 @@
-function [ABdiffsq, mean_e, sigma_e, e_rx_pdf,e_rx_logpdf, e_rx_sum_pdf, e_sol_rx] = method2_upgraded(params)
+function [ABdiffsq, p_rx_logpdf, SIM, upgrade_sol,confirm_sol] = method2_upgraded(params)
     GP = params.GP;
     L = params.L;
     N = params.N;
@@ -8,9 +8,13 @@ function [ABdiffsq, mean_e, sigma_e, e_rx_pdf,e_rx_logpdf, e_rx_sum_pdf, e_sol_r
     Asq = zeros(1, GP);
     Bsq = zeros(1, GP);
     ABdiffsq = zeros(1, GP);
+    ABdiffsq_ch = zeros(1, GP);
     ABplussq = zeros(1, GP);
     J = zeros(1, GP);
- 
+    SIM_n = zeros(1, GP-1);
+    SIM_h = zeros(1, GP-1);
+    SIM = zeros(1, GP-1);
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     for kk=1:GP
@@ -18,38 +22,38 @@ function [ABdiffsq, mean_e, sigma_e, e_rx_pdf,e_rx_logpdf, e_rx_sum_pdf, e_sol_r
         sumB = 0;
         sumABdiff = 0;
         sumABplus = 0;
-        sumJ = 0;
         for m=1:N_OFDM_symbols
-            for u = kk:GP
-                sumJ = sumJ + abs(r((GP+N)*(m-1)+u)-r((GP+N)*(m-1)+N+u))^2;
-            end
             sumA = sumA + abs(r((GP+N)*(m-1) + kk))^2;
             sumB = sumB + abs(r((GP+N)*(m-1) + (kk+N)))^2;
             sumABdiff = sumABdiff + abs(r((GP+N)*(m-1) + kk) - r((GP+N)*(m-1) + (kk+N)))^2;
             sumABplus = sumABplus + abs(r((GP+N)*(m-1) + kk) + r((GP+N)*(m-1) + (kk+N)))^2;
         end
         ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols*(GP-kk+1));
-        ABplussq(kk) = sumABplus/(2*N_OFDM_symbols);
-        J(kk) = sumJ/(2*N_OFDM_symbols*(GP-kk+1));
+        ABdiffsq_ch(kk) = sumABdiff/(2*N_OFDM_symbols);
     end
-
-    % mean_A = (J(5))./(GP+1-(1:GP));
-    % sigma_A = mean_A.^2/N_OFDM_symbols;
    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % mean_e = (params.c_hat*(1-params.rho(4,16:-1:1))+J)/2; %%평균
-    mean_e = (params.c_hat*(1-params.rho(4,16:-1:1))+J)./(2*(GP-(1:GP)+1)); %%평균
+    mean_e = params.J ./ (GP-(1:GP)+1); %%평균
     sigma_e = mean_e.^2 / N_OFDM_symbols; %%분산
 
     e_rx_logpdf = -0.5 * (abs(ABdiffsq - mean_e).^2 ./ sigma_e) - log(sqrt(2 * pi * sigma_e));
-    e_rx_pdf = (1 ./ sqrt(2 * pi * sigma_e)) .* exp(-0.5 * (abs(ABdiffsq - mean_e).^2 ./ sigma_e));
     
-    e_rx_sum_pdf = cumsum(e_rx_logpdf, 'reverse');
-    e_rx_sum_pdf = e_rx_sum_pdf .* (1 ./ (GP + 1 - (1:GP)));
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
-    [~, e_sol_rx] = max(e_rx_logpdf);
+    mean_p = (params.c_hat*(1-params.rho(4,16:-1:1))+J)/2; %%평균
+    sigma_p = mean_p.^2 / N_OFDM_symbols; %%분산
+    
+    p_rx_logpdf = -0.5 * (abs(ABdiffsq_ch - mean_p).^2 ./ sigma_p) - log(sqrt(2 * pi * sigma_p));
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    for u = 1:GP-1
+        SIM(u) = sum(p_rx_logpdf(1:u)) + sum(e_rx_logpdf(u:GP-1))/(GP-u);
+    end
+
+    [~, upgrade_sol] = max(SIM);
+    [~, confirm_sol] = max(p_rx_logpdf);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

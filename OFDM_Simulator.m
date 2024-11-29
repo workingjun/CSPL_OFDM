@@ -144,7 +144,7 @@ for n = 1:length(params.SNR_dB)
         params.rx_signal = tx_signal + N_AWGN;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% AWGN 채널을 통과한 수신 신호 생성 !!
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 주파수 선택적 페이딩 채널 ??????????????????????? (가)
 
-        [params.J, SIM, params.new_sol] = new_method2(params);%%%%%%(u)th estimated noise power
+        [params.J, params.SIM, params.new_sol] = new_method2(params);%%%%%%(u)th estimated noise power
         [new_maxium, params.rho, params.c_hat, params.L_sol] = new_method3(params);%%%%%%%%method3 함수를 가져와 사용
         % [mn_sol, zs_sol, rob, rak_v2] = new_method4(new_maxium,SIM); %%%%%%%%method4로 ranking-sum과 normalization 3가지
         [e_rx, mean_e_og, sigma_e_og, e_logpdf, e_sum_pdf, params.L_sol_e] = method2_Additional(params);
@@ -152,29 +152,10 @@ for n = 1:length(params.SNR_dB)
         % Subplot_rxSignal(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        [ABdiffsq, mean_p, ABdiffsq_ch,e_rx_logpdf, p_rx_logpdf, SIM_upgrade, params.upgrade_sol, params.confirm_sol] = method2_upgraded(params);
+        [ABdiffsq, params.e_rx_sum_pdf, params.p_rx_logpdf, params.p_rx_sum_pdf, params.SIM_upgrade, params.upgrade_sol, params.confirm_sol] = method2_upgraded(params);
         % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
         
-        figure(1)
-        stem(1:16, e_rx_logpdf);
-        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.confirm_sol)], 'Interpreter', 'latex');
-        grid on;
-        % ylim([0 15]);
-
-
-        figure(2)
-        stem(1:16, p_rx_logpdf);
-        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.confirm_sol)], 'Interpreter', 'latex');
-        grid on;
-        % ylim([0 15]);
-
-        figure(3)
-        stem(1:15, SIM_upgrade);
-        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.upgrade_sol)], 'Interpreter', 'latex');
-        grid on;
-        % ylim([0 25]);
-
-        pause;
+        Subplot_method2(params);
 
         if Pilot_CHE_Test == 1 
             hat_H = Pilot_CHE(No_Pilot_symbols, params.N, params.GP, params.rx_signal, Tx_Symbols);

@@ -1,4 +1,4 @@
-function [ABdiffsq, mean_p, ABdiffsq_ch, e_rx_logpdf, p_rx_logpdf, SIM, upgrade_sol,confirm_sol] = method2_upgraded(params)
+function [ABdiffsq, e_rx_sum_pdf, p_rx_logpdf, p_rx_sum_pdf, SIM_upgrade, upgrade_sol, confirm_sol] = method2_upgraded(params)
     GP = params.GP;
     L = params.L;
     N = params.N;
@@ -11,9 +11,7 @@ function [ABdiffsq, mean_p, ABdiffsq_ch, e_rx_logpdf, p_rx_logpdf, SIM, upgrade_
     ABdiffsq_ch = zeros(1, GP);
     ABplussq = zeros(1, GP);
     J = zeros(1, GP);
-    SIM_n = zeros(1, GP-1);
-    SIM_h = zeros(1, GP-1);
-    SIM = zeros(1, GP-1);
+    SIM_upgrade = zeros(1, GP-1);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -29,6 +27,7 @@ function [ABdiffsq, mean_p, ABdiffsq_ch, e_rx_logpdf, p_rx_logpdf, SIM, upgrade_
             sumABplus = sumABplus + abs(r((GP+N)*(m-1) + kk) + r((GP+N)*(m-1) + (kk+N)))^2;
         end
         ABdiffsq(kk) = sumABdiff/(2*N_OFDM_symbols*(GP-kk+1));
+        ABdiffsq_ch(kk) = sumABdiff/(2*N_OFDM_symbols);
     end
    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,21 +37,31 @@ function [ABdiffsq, mean_p, ABdiffsq_ch, e_rx_logpdf, p_rx_logpdf, SIM, upgrade_
 
     e_rx_logpdf = -0.5 * (abs(ABdiffsq - mean_e).^2 ./ sigma_e) - log(sqrt(2 * pi * sigma_e));
     
+    e_rx_sum_pdf = cumsum(e_rx_logpdf, 'reverse');
+    e_rx_sum_pdf = e_rx_sum_pdf .* (1 ./ (GP + 1 - (1:GP)));
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
     mean_p = (params.c_hat*(1-params.rho(4,16:-1:1))+J)./(GP+1-(1:GP)); %%평균
+    % mean_p = (params.c_hat*(1-params.rho(4,16:-1:1))+J); %%평균
+    
     sigma_p = mean_p.^2 / N_OFDM_symbols; %%분산
     
     p_rx_logpdf = -0.5 * (abs(ABdiffsq - mean_p).^2 ./ sigma_p) - log(sqrt(2 * pi * sigma_p));
     
+    p_rx_sum_pdf = cumsum(p_rx_logpdf);
+    p_rx_sum_pdf = p_rx_sum_pdf .* (1 ./ (1:GP));
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    SIM_upgrade(1) = e_rx_sum_pdf(1);
 
-    for u = 1:GP-1
-        SIM(u) = sum(p_rx_logpdf(1:u))/u + sum(e_rx_logpdf(u+1:GP))/(GP-u);
+    for u = 2:GP
+        SIM_upgrade(u) = p_rx_sum_pdf(u-1) + e_rx_sum_pdf(u);
     end
-
-    [~, upgrade_sol] = max(SIM);
-    [~, confirm_sol] = max(p_rx_logpdf);
+    
+    [~, upgrade_sol] = max(SIM_upgrade);
+    [~, confirm_sol] = max(p_rx_sum_pdf);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

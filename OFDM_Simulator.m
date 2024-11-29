@@ -13,8 +13,8 @@ N_bits = (BPS*params.N)*N_OFDM_symbols;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % params.SNR_dB = 0:5:30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BER Simulation !!
 % params.SNR_dB = -10:5:40;
-params.SNR_dB = 30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constellation 그리기 Enable !!
-params.N_iter = 10^2;%%% 모의 실험 정확도를 높이려면 수를 키우시오! :: 보고서 제출시 10^5 이상 으로 !! 
+params.SNR_dB = 10;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constellation 그리기 Enable !!
+params.N_iter = 10^3;%%% 모의 실험 정확도를 높이려면 수를 키우시오! :: 보고서 제출시 10^5 이상 으로 !! 
 
 No_Pilot_symbols = 1;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Pilots OFDM Symbols !! [201119]
 if No_Pilot_symbols == 0
@@ -152,9 +152,14 @@ for n = 1:length(params.SNR_dB)
         % Subplot_rxSignal(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        [ABdiffsq, p_rx_logpdf, SIM_upgrade, params.upgrade_sol, params.confirm_sol] = method2_upgraded(params);
+        [ABdiffsq, mean_p, ABdiffsq_ch,e_rx_logpdf, p_rx_logpdf, SIM_upgrade, params.upgrade_sol, params.confirm_sol] = method2_upgraded(params);
         % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
-
+        
+        figure(1)
+        stem(1:16, e_rx_logpdf);
+        title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.confirm_sol)], 'Interpreter', 'latex');
+        grid on;
+        % ylim([0 15]);
 
 
         figure(2)
@@ -167,7 +172,7 @@ for n = 1:length(params.SNR_dB)
         stem(1:15, SIM_upgrade);
         title(['LR of Joint $f_A$ / $\hat{L}$: '  num2str(params.upgrade_sol)], 'Interpreter', 'latex');
         grid on;
-        % ylim([0 15]);
+        % ylim([0 25]);
 
         pause;
 

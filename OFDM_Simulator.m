@@ -14,7 +14,7 @@ N_bits = (BPS*params.N)*N_OFDM_symbols;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % params.SNR_dB = 0:5:30;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BER Simulation !!
 % params.SNR_dB = -10:5:40;
 params.SNR_dB = 10;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constellation 그리기 Enable !!
-params.N_iter = 10^3;%%% 모의 실험 정확도를 높이려면 수를 키우시오! :: 보고서 제출시 10^5 이상 으로 !! 
+params.N_iter = 10^2;%%% 모의 실험 정확도를 높이려면 수를 키우시오! :: 보고서 제출시 10^5 이상 으로 !! 
 
 No_Pilot_symbols = 1;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Number of Pilots OFDM Symbols !! [201119]
 if No_Pilot_symbols == 0
@@ -152,10 +152,13 @@ for n = 1:length(params.SNR_dB)
         % Subplot_rxSignal(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        [ABdiffsq, params.e_rx_sum_pdf, params.p_rx_logpdf, params.p_rx_sum_pdf, params.SIM_upgrade, params.upgrade_sol, params.confirm_sol] = method2_upgraded(params);
+        [ABdiffsq, mean_p, params.e_rx_logpdf, params.e_rx_sum_pdf,... 
+            params.p_rx_logpdf, params.p_rx_sum_pdf,... 
+            params.SIM_upgrade, params.upgrade_sol,...  
+            params.confirm_sol, params.confirm2_sol] = method2_upgraded(params);
         % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
         
-        Subplot_method2(params);
+        Subplot_method2_upgrade(params);
 
         if Pilot_CHE_Test == 1 
             hat_H = Pilot_CHE(No_Pilot_symbols, params.N, params.GP, params.rx_signal, Tx_Symbols);

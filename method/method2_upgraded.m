@@ -1,4 +1,4 @@
-function [ABdiffsq, e_rx_sum_pdf, p_rx_logpdf, p_rx_sum_pdf, SIM_upgrade, upgrade_sol, confirm_sol] = method2_upgraded(params)
+function [ABdiffsq, mean_p, e_rx_logpdf, e_rx_sum_pdf, p_rx_logpdf, p_rx_sum_pdf, SIM_upgrade, upgrade_sol, confirm_sol, confirm2_sol] = method2_upgraded(params)
     GP = params.GP;
     L = params.L;
     N = params.N;
@@ -54,14 +54,25 @@ function [ABdiffsq, e_rx_sum_pdf, p_rx_logpdf, p_rx_sum_pdf, SIM_upgrade, upgrad
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    SIM_upgrade(1) = e_rx_sum_pdf(1);
+    %%% 이전에 했던 방식; 노이즈 파트가 다름
+    % p_rx_sum_pdf = zeros(1, GP-1); e_rx_sum_pdf = zeros(1, GP-1); 
+    % for u = 1:GP-1
+    %     p_rx_sum_pdf(u) = sum(p_rx_logpdf(1:u))/u;
+    %     e_rx_sum_pdf(u) = sum(e_rx_logpdf(u+1:GP))/(GP-u);
+    %     SIM_upgrade(u) =  p_rx_sum_pdf(u) + e_rx_sum_pdf(u);
+    % end
 
+    SIM_upgrade(1) = e_rx_sum_pdf(1);
     for u = 2:GP
         SIM_upgrade(u) = p_rx_sum_pdf(u-1) + e_rx_sum_pdf(u);
     end
     
     [~, upgrade_sol] = max(SIM_upgrade);
     [~, confirm_sol] = max(p_rx_sum_pdf);
+    [~, confirm2_sol] = max(e_rx_sum_pdf);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
+
+
+

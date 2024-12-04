@@ -43,13 +43,13 @@ function [ABdiffsq, ABdiffsq_ch, mean_p, ...
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
-    mean_p = (params.c_hat*(1-params.rho(4,16:-1:1))+J)./(GP+1-(1:GP)); %%평균
-    sigma_p = mean_p.^2 / N_OFDM_symbols; %%분산
-    p_rx_logpdf = -0.5 * (abs(ABdiffsq - mean_p).^2 ./ sigma_p) - log(sqrt(2 * pi * sigma_p));
-
-    % mean_p = params.c_hat*(1-params.rho(4,16:-1:1))+J; %%평균
+    % mean_p = (params.c_hat*(1-params.rho(4,16:-1:1))+J)./(GP+1-(1:GP)); %%평균
     % sigma_p = mean_p.^2 / N_OFDM_symbols; %%분산
-    % p_rx_logpdf = -0.5 * (abs(ABdiffsq_ch - mean_p).^2 ./ sigma_p) - log(sqrt(2 * pi * sigma_p));
+    % p_rx_logpdf = -0.5 * (abs(ABdiffsq - mean_p).^2 ./ sigma_p) - log(sqrt(2 * pi * sigma_p));
+
+    mean_p = params.c_hat*(1-params.rho(4,16:-1:1))+J; %%평균
+    sigma_p = mean_p.^2 / N_OFDM_symbols; %%분산
+    p_rx_logpdf = -0.5 * (abs(ABdiffsq_ch - mean_p).^2 ./ sigma_p) - log(sqrt(2 * pi * sigma_p));
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

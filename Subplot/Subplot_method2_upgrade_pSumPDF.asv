@@ -18,7 +18,8 @@ function []=Subplot_method2_upgrade_pSumPDF(params, flags)
             ylim([-10 10]);
             title(['noise / u=' num2str(u)], 'Interpreter', 'latex');
         end
-       
+        
+
     else
         fig = figure(101);
         fig.Position = [200, 100, 1000, 600];

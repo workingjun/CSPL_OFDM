@@ -160,7 +160,7 @@ for n = 1:length(params.SNR_dB)
 
         % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
         
-        Subplot_method2_upgrade_pSumPDF(params, 1);
+        Subplot_method2_upgrade_pSumPDF(params, 0);
 
         if Pilot_CHE_Test == 1 
             hat_H = Pilot_CHE(No_Pilot_symbols, params.N, params.GP, params.rx_signal, Tx_Symbols);

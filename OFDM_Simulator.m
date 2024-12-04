@@ -21,7 +21,7 @@ if No_Pilot_symbols == 0
     Pilot_CHE_Test = 0;
 else
     Pilot_CHE_Test = 1;
-end
+end 
 
 %%% SNR (Linear Value, 선형값) => SNR_dB (dB Value, dB 값)
 %%% if SNR = 10, SNR_dB <= 10*log10( SNR ) = 10 (dB). 0.
@@ -153,12 +153,14 @@ for n = 1:length(params.SNR_dB)
         % LKH_Analy(params) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         [params.ABdiffsq, params.ABdiffsq_ch, mean_p, ...
-            params.e_rx_sum_pdf, params.p_rx_sum_pdf, ...
+            params.p_rx_logpdf, params.p_rx_sum_pdf, params.e_rx_sum_pdf, ...
             params.SIM_upgrade, params.SIM_channel, params.SIM_noise, ...
+            params.SIM_channel_part, params.SIM_noise_part, ...
             params.upgrade_sol, params.confirm_sol, params.confirm2_sol] = method2_upgraded(params);
+
         % [ABdiffsq, ppw, mean_e, e_rx_logpdf, params.e_sol_rx] = method2_upgraded_add(params);
         
-        Subplot_method2_upgrade(params);
+        Subplot_method2_upgrade_pSumPDF(params, 1);
 
         if Pilot_CHE_Test == 1 
             hat_H = Pilot_CHE(No_Pilot_symbols, params.N, params.GP, params.rx_signal, Tx_Symbols);
@@ -227,33 +229,33 @@ for n = 1:length(params.SNR_dB)
         [params.Pe_multi_pdf, params.Pe_sum_pdf, params.L_sol_pe1, params.L_sol_pe2] = hhat_pEpcilon(params); %랜덤변수 Pe_l의 joint pdf, LLR
 
         % Subplot_hhat(params);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        result = Performance_count(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        params.count1 = result.count1;
-        params.count2 = result.count2;
-        params.count3 = result.count3;
-        params.count4 = result.count4;
-
-        params.count11 = result.count11;
-        params.count12 = result.count12;
-        params.count13 = result.count13;
-        params.count14 = result.count14;
-
-        params.count21 = result.count21;
-        params.count22 = result.count22;
-        params.count23 = result.count23;
-        params.count24 = result.count24;
-
-        params.count31 = result.count31;
-        params.count32 = result.count32;
-        params.count33 = result.count33;
-        params.count34 = result.count34;
-
-        params.count41 = result.count41;
-        params.count42 = result.count42;
-        params.count43 = result.count43;
-        params.count44 = result.count44;
+        % result = Performance_count(params); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % 
+        % params.count1 = result.count1;
+        % params.count2 = result.count2;
+        % params.count3 = result.count3;
+        % params.count4 = result.count4;
+        % 
+        % params.count11 = result.count11;
+        % params.count12 = result.count12;
+        % params.count13 = result.count13;
+        % params.count14 = result.count14;
+        % 
+        % params.count21 = result.count21;
+        % params.count22 = result.count22;
+        % params.count23 = result.count23;
+        % params.count24 = result.count24;
+        % 
+        % params.count31 = result.count31;
+        % params.count32 = result.count32;
+        % params.count33 = result.count33;
+        % params.count34 = result.count34;
+        % 
+        % params.count41 = result.count41;
+        % params.count42 = result.count42;
+        % params.count43 = result.count43;
+        % params.count44 = result.count44;
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 수신기 Part(2) :: Error Count !!
         
